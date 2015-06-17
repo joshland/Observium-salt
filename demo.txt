@@ -1,0 +1,511 @@
+nginx-shipper:
+----------
+          ID: states
+    Function: no.None
+      Result: False
+     Comment: Unknown yaml render error
+     Started: 
+    Duration: 
+     Changes:   
+
+Summary
+------------
+Succeeded: 0
+Failed:    1
+------------
+Total states run:     1
+observium:
+----------
+          ID: states
+    Function: no.None
+      Result: False
+     Comment: Unknown yaml render error
+     Started: 
+    Duration: 
+     Changes:   
+
+Summary
+------------
+Succeeded: 0
+Failed:    1
+------------
+Total states run:     1
+nginx-shipper:
+----------
+          ID: snmpd
+    Function: pkg.installed
+      Result: True
+     Comment: Package snmpd is already installed.
+     Started: 16:13:31.760210
+    Duration: 653.889 ms
+     Changes:   
+----------
+          ID: /etc/snmp/snmpd.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/snmp/snmpd.conf is in the correct state
+     Started: 16:13:32.457471
+    Duration: 2.728 ms
+     Changes:   
+----------
+          ID: /etc/default/snmpd
+    Function: file.replace
+      Result: True
+     Comment: No changes needed to be made
+     Started: 16:13:32.461761
+    Duration: 1.233 ms
+     Changes:   
+----------
+          ID: snmpd_service
+    Function: cmd.run
+        Name: service snmpd restart
+      Result: True
+     Comment: Command "service snmpd restart" run
+     Started: 16:13:32.464872
+    Duration: 2027.287 ms
+     Changes:   
+              ----------
+              pid:
+                  2188
+              retcode:
+                  0
+              stderr:
+              stdout:
+                   * Restarting network management services:
+
+Summary
+------------
+Succeeded: 4 (changed=1)
+Failed:    0
+------------
+Total states run:     4
+observium:
+----------
+          ID: apache2
+    Function: pkg.installed
+      Result: True
+     Comment: Package apache2 is already installed.
+     Started: 16:13:31.794694
+    Duration: 628.7 ms
+     Changes:   
+----------
+          ID: mysql-client
+    Function: pkg.installed
+      Result: True
+     Comment: Package mysql-client is already installed.
+     Started: 16:13:32.423537
+    Duration: 2.359 ms
+     Changes:   
+----------
+          ID: php5_ppa
+    Function: pkgrepo.managed
+      Result: True
+     Comment: Package repo 'php5_ppa' already configured
+     Started: 16:13:32.467387
+    Duration: 30.52 ms
+     Changes:   
+----------
+          ID: php5
+    Function: pkg.installed
+      Result: True
+     Comment: All specified packages are already installed.
+     Started: 16:13:32.498019
+    Duration: 0.579 ms
+     Changes:   
+----------
+          ID: base
+    Function: pkg.installed
+      Result: True
+     Comment: All specified packages are already installed.
+     Started: 16:13:32.499089
+    Duration: 0.472 ms
+     Changes:   
+----------
+          ID: snmp
+    Function: pkg.installed
+      Result: True
+     Comment: Package snmp is already installed.
+     Started: 16:13:32.499623
+    Duration: 0.326 ms
+     Changes:   
+----------
+          ID: snmp-mibs-downloader
+    Function: pkg.installed
+      Result: True
+     Comment: Package snmp-mibs-downloader is already installed.
+     Started: 16:13:32.500012
+    Duration: 0.331 ms
+     Changes:   
+----------
+          ID: /etc/snmp/snmp.conf
+    Function: file.replace
+      Result: True
+     Comment: Changes were made
+     Started: 16:13:32.502018
+    Duration: 1.648 ms
+     Changes:   
+              ----------
+              diff:
+                  --- 
+                  +++ 
+                  @@ -2,4 +2,4 @@
+                   # As the snmp packages come without MIB files due to license reasons, loading
+                   # of MIBs is disabled by default. If you added the MIBs you can reenable
+                   # loaging them by commenting out the following line.
+                  -##########################mibs :
+                  +###########################mibs :
+----------
+          ID: mysql-client-5.5
+    Function: pkg.installed
+      Result: True
+     Comment: Package mysql-client-5.5 is already installed.
+     Started: 16:13:32.503734
+    Duration: 0.369 ms
+     Changes:   
+----------
+          ID: mysql_setup
+    Function: debconf.set
+        Name: mysql-server
+      Result: True
+     Comment: All specified answers are already set
+     Started: 16:13:32.505516
+    Duration: 166.717 ms
+     Changes:   
+----------
+          ID: mysql-server-5.5
+    Function: pkg.installed
+      Result: True
+     Comment: Package mysql-server-5.5 is already installed.
+     Started: 16:13:32.672676
+    Duration: 1.182 ms
+     Changes:   
+----------
+          ID: python-mysqldb
+    Function: pkg.installed
+      Result: True
+     Comment: Package python-mysqldb is already installed.
+     Started: 16:13:32.673934
+    Duration: 0.355 ms
+     Changes:   
+----------
+          ID: /opt/observium
+    Function: file.directory
+      Result: True
+     Comment: Directory /opt/observium is in the correct state
+     Started: 16:13:32.675637
+    Duration: 0.471 ms
+     Changes:   
+----------
+          ID: mysql-service
+    Function: service.running
+        Name: mysql
+      Result: True
+     Comment: The service mysql is already running
+     Started: 16:13:32.677929
+    Duration: 20.367 ms
+     Changes:   
+----------
+          ID: install_observium
+    Function: cmd.run
+        Name: wget http://www.observium.org/observium-community-latest.tar.gz
+      Result: True
+     Comment: /opt/observium-community-latest.tar.gz exists
+     Started: 16:13:32.700044
+    Duration: 0.507 ms
+     Changes:   
+----------
+          ID: copy_config
+    Function: cmd.run
+        Name: cp config.php.default config.php
+      Result: True
+     Comment: Command "cp config.php.default config.php" run
+     Started: 16:13:32.701830
+    Duration: 4.657 ms
+     Changes:   
+              ----------
+              pid:
+                  2787
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: observium_extract
+    Function: cmd.run
+        Name: tar zxvf observium-community-latest.tar.gz
+      Result: True
+     Comment: /opt/observium/discovery.php exists
+     Started: 16:13:32.708061
+    Duration: 0.442 ms
+     Changes:   
+----------
+          ID: Create_db
+    Function: cmd.run
+        Name: mysql -uroot -pmysql -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+      Result: False
+     Comment: Command "mysql -uroot -pmysql -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"" run
+     Started: 16:13:32.709770
+    Duration: 9.611 ms
+     Changes:   
+              ----------
+              pid:
+                  2789
+              retcode:
+                  1
+              stderr:
+                  ERROR 1007 (HY000) at line 1: Can't create database 'observium'; database exists
+              stdout:
+----------
+          ID: Create_db
+    Function: cmd.run
+        Name: mkdir -p /opt/observium/rrd
+      Result: True
+     Comment: Command "mkdir -p /opt/observium/rrd" run
+     Started: 16:13:32.720942
+    Duration: 4.969 ms
+     Changes:   
+              ----------
+              pid:
+                  2792
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: Change_privilages
+    Function: cmd.run
+        Name: mysql -uroot -pmysql -e "GRANT ALL PRIVILEGES ON observium.* TO 'observium'@'localhost'IDENTIFIED BY 'observium';"
+      Result: True
+     Comment: Command "mysql -uroot -pmysql -e "GRANT ALL PRIVILEGES ON observium.* TO 'observium'@'localhost'IDENTIFIED BY 'observium';"" run
+     Started: 16:13:32.727491
+    Duration: 7.622 ms
+     Changes:   
+              ----------
+              pid:
+                  2794
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: Change_privilages
+    Function: cmd.run
+        Name: mkdir -p /opt/observium/logs
+      Result: True
+     Comment: Command "mkdir -p /opt/observium/logs" run
+     Started: 16:13:32.736731
+    Duration: 4.468 ms
+     Changes:   
+              ----------
+              pid:
+                  2797
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: /opt/observium/config.php
+    Function: file.blockreplace
+      Result: True
+     Comment: Changes were made
+     Started: 16:13:32.742780
+    Duration: 2.413 ms
+     Changes:   
+              ----------
+              diff:
+                  --- 
+                  +++ 
+                  @@ -4,8 +4,8 @@
+                   
+                   // Database config ---  This MUST be configured
+                   $config['db_host'] = 'localhost';
+                  -$config['db_user'] = 'USERNAME';
+                  -$config['db_pass'] = 'PASSWORD';
+                  +$config['db_user'] = 'observium';
+                  +$config['db_pass'] = 'observium';
+                   $config['db_name'] = 'observium';
+                   
+                   // Base directory
+----------
+          ID: Change_permission
+    Function: cmd.run
+        Name: php includes/update/update.php
+      Result: True
+     Comment: Command "php includes/update/update.php" run
+     Started: 16:13:32.747043
+    Duration: 45.037 ms
+     Changes:   
+              ----------
+              pid:
+                  2799
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: Change_permission
+    Function: cmd.run
+        Name: chown www-data:www-data /opt/observium/rrd
+      Result: True
+     Comment: Command "chown www-data:www-data /opt/observium/rrd" run
+     Started: 16:13:32.793797
+    Duration: 4.898 ms
+     Changes:   
+              ----------
+              pid:
+                  2802
+              retcode:
+                  0
+              stderr:
+              stdout:
+----------
+          ID: /etc/apache2/sites-available/default
+    Function: file.managed
+      Result: True
+     Comment: File /etc/apache2/sites-available/default is in the correct state
+     Started: 16:13:32.800160
+    Duration: 3.142 ms
+     Changes:   
+----------
+          ID: Reload_apache
+    Function: cmd.run
+        Name: service apache2 reload
+      Result: True
+     Comment: Command "service apache2 reload" run
+     Started: 16:13:32.804657
+    Duration: 71.568 ms
+     Changes:   
+              ----------
+              pid:
+                  2804
+              retcode:
+                  0
+              stderr:
+                  apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName
+              stdout:
+                   * Reloading web server config apache2
+                     ...done.
+----------
+          ID: Enable_modules
+    Function: cmd.run
+        Name: apache2ctl restart
+      Result: True
+     Comment: Command "apache2ctl restart" run
+     Started: 16:13:32.877521
+    Duration: 53.763 ms
+     Changes:   
+              ----------
+              pid:
+                  2819
+              retcode:
+                  0
+              stderr:
+                  apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1 for ServerName
+              stdout:
+----------
+          ID: Enable_modules
+    Function: cmd.run
+        Name: a2enmod rewrite
+      Result: True
+     Comment: Command "a2enmod rewrite" run
+     Started: 16:13:32.932855
+    Duration: 31.988 ms
+     Changes:   
+              ----------
+              pid:
+                  2823
+              retcode:
+                  0
+              stderr:
+              stdout:
+                  Module rewrite already enabled
+----------
+          ID: Add_observium_user
+    Function: cmd.run
+        Name: ./adduser.php admin admin 10
+      Result: True
+     Comment: Command "./adduser.php admin admin 10" run
+     Started: 16:13:32.966963
+    Duration: 45.224 ms
+     Changes:   
+              ----------
+              pid:
+                  2837
+              retcode:
+                  0
+              stderr:
+              stdout:
+                  ?[0;32mObservium CE 0.15.6.6430
+                  ?[1;37mAdd User?[0m
+                  ?[0m
+                  User admin already exists!
+----------
+          ID: polling_discovery
+    Function: cmd.run
+        Name: ./poller.php -h all
+      Result: True
+     Comment: Command "./poller.php -h all" run
+     Started: 16:13:33.013514
+    Duration: 54.533 ms
+     Changes:   
+              ----------
+              pid:
+                  2840
+              retcode:
+                  0
+              stderr:
+              stdout:
+                  ?[0;32mObservium CE 0.15.6.6430
+                  ?[1;37mPoller?[0m
+                  ?[0m
+                  Starting polling run:
+                  
+                  WARNING: 0 devices polled. Did you specify a device that does not exist?
+                  Memory usage: 7.25MB (peak: 7.25MB)
+                  MySQL: Cell[0/0s] Row[0/0s] Rows[0/0s] Column[0/0s] Update[0/0s] Insert[0/0s] Delete[0/0s]
+----------
+          ID: polling_discovery
+    Function: cmd.run
+        Name: ./discovery.php -h all
+      Result: True
+     Comment: Command "./discovery.php -h all" run
+     Started: 16:13:33.069654
+    Duration: 3538.012 ms
+     Changes:   
+              ----------
+              pid:
+                  2845
+              retcode:
+                  0
+              stderr:
+              stdout:
+                  ?[0;32mObservium CE 0.15.6.6430
+                  ?[1;37mDiscovery?[0m
+                  ?[0m
+                  Current Revision : 6430
+                  New Revision   : 6464
+                  Memory usage: 7.5MB (peak: 7.5MB)
+                  MySQL: Cell[21/0s] Row[0/0s] Rows[0/0s] Column[0/0s] Update[0/0s] Insert[0/0s] Delete[0/0s]
+----------
+          ID: /etc/cron.d/observium
+    Function: file.managed
+      Result: True
+     Comment: File /etc/cron.d/observium is in the correct state
+     Started: 16:13:36.612070
+    Duration: 4.036 ms
+     Changes:   
+----------
+          ID: apache2
+    Function: service.running
+      Result: True
+     Comment: Service apache2 is already enabled, and is in the desired state
+     Started: 16:13:36.617531
+    Duration: 32.206 ms
+     Changes:   
+
+Summary
+-------------
+Succeeded: 32 (changed=15)
+Failed:     1
+-------------
+Total states run:     33
