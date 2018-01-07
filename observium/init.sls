@@ -1,10 +1,21 @@
-{% set mdb    = pillar.get('observium:mariadb', {}) -%}
-{% set obdata = pillar['observium']                 -%}
+{% set observium = pillar['observium'] -%}
+pkgs:
+  pkg.installed:
+    - pkgs:
+      - nginx
+      - php-fpm
+ 
+/etc/php-fpm.d/www.conf:
+  fle.managed:
+    - user:  root
+    - group: root
+    - mode:  0655
+    - source: salt://observium/files/www.obs.php
 
 /opt/observium:
   file.directory:
     - makedirs: True
-    - order: 12 
+    - order: 12
  
 install_observium:
   cmd.run:
@@ -26,32 +37,30 @@ copy_config:
     - name: cp config.php.default config.php
     - order: 14
 
-#Change_php.config:
-/opt/observium/config.php:   
+/opt/observium/config.php:
   file.blockreplace:
     - name: /opt/observium/config.php
     - marker_start: $config['db_host'] = 'localhost';
-    - marker_end: $config['db_name'] = 'observium';
-    - content: | 
-        $config['db_user'] = '{{ obdata["user"] }}';
-        $config['db_pass'] = '{{ obdata["password"] }}';
+    - marker_end:   $config['db_name'] = 'observium';
+    - content: |
+        $config['db_user'] = '{{ observium["user"] }}';
+        $config['db_pass'] = '{{ observium["pass"] }}';
     - order: 17
- 
+
 Create_db:
   cmd.run:
     - names:
-      - mysql -u{{ mdb['user'] }} -p{{ mdb['pass'] }} -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+      - mysql -u{{ observium['user'] }} -p{{ observium['pass'] }} -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
       - mkdir -p /opt/observium/rrd
     - order: 15
 
 Change_privilages:
   cmd.run:
     - names:
-      - mysql -u{{ mdb['user'] }} -p{{ mdb['pass'] }} -e "GRANT ALL PRIVILEGES ON {{ obdata.dbname }}.* TO '{{ obdata.user }}'@'localhost'IDENTIFIED BY '{{ obdata.pass }}';"
-#        -  mysql -u{{ mdb['user'] }} -p{{ mdb['pass'] }} -e "exit;"
+      - mysql -u{{ observium['dbuser'] }} -p{{ observium['dbpass'] }} -e "GRANT ALL PRIVILEGES ON {{ observium['dbname'] }}.* TO '{{ observium['user'] }}'@'localhost'IDENTIFIED BY '{{ observium['pass'] }}';"
       - mkdir -p /opt/observium/logs
     - order: 16
-  
+
 Change_permission:
   cmd.run:
     - cwd: /opt/observium
@@ -73,7 +82,7 @@ Reload_apache:
 Enable_modules:
   cmd.run:
     - cwd: /opt/observium
-    - names:  
+    - names:
 #        - php5enmod php5-mcrypt
       - a2enmod rewrite
       - apache2ctl restart
@@ -82,19 +91,19 @@ Enable_modules:
 Add_observium_user:
   cmd.run:
     - cwd: /opt/observium
-    - name: ./adduser.php {{ pillar ['observium']['user'] }} {{ pillar ['observium']['pass'] }} {{ pillar ['observium']['level'] }}    
-    - order: 22 
-  
-  polling_discovery:
+    - name: ./adduser.php {{ observium['user'] }} {{ observium['pass'] }} {{ observium['level'] }}
+    - order: 22
+
+polling_discovery:
   cmd.run:
     - cwd: /opt/observium
     - names:
       - ./discovery.php -h all
       - ./poller.php -h all
     - order: 23
-  
+
 /etc/cron.d/observium:
   file.managed:
     - source: salt://observium/files/cron
     - order: 24
- 
+
