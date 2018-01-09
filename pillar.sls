@@ -5,6 +5,19 @@ observium:
   level:  superadmin
   user:   admin
   pass:   MatterSplatter
+  ldap:   'False',
+  ## Optional
+  # see: http://docs.observium.org/authentication/#ldap-authentication
+  auth_ldap_prefix: uid=
+  auth_ldap_suffix: cn=users,cn=account,dc=example,dc=org,
+  ## Optional-Optional
+  auth_ldap_group:
+    - cn=observium,ou=groups,dc=example,dc=com
+  auth_ldap_groupbase: ou=groups,dc=example,dc=com
+  auth_ldap_binddn: ""  # Initial LDAP bind dn and password, leave empty for bind with user's dn
+  auth_ldap_bindpw: ""
+  auth_ldap_bindanonymous: False
+  
   users:
     john:
       password: Ripper
