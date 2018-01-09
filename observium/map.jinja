@@ -1,0 +1,17 @@
+{% set observium = salt['pillar.get']('observium', {
+    "dbuser": 'observer',
+    "dbname": 'observium',
+    "ldap":   'False',
+    "auth_ldap_prefix": "uid=",
+    "auth_ldap_suffix": "cn=users,cn=acount,dc=example,dc=org",
+    'auth_ldap_prefix': "uid=",
+    'auth_ldap_suffix': ",ou=People,dc=example,dc=com",
+    'auth_ldap_group':  ["cn=observium,ou=groups,dc=example,dc=com",],
+    'auth_ldap_groupbase': "ou=groups,dc=example,dc=com",
+    'auth_ldap_binddn': "",
+    'auth_ldap_bindpw': "",
+    'auth_ldap_bindanonymous': False,
+    'auth_ldap_objectclass': "",
+    'auth_ldap_recursive':  TRUE,
+    'auth_ldap_recursive_maxdepth': 3,
+    }, merge=True)  -%}
