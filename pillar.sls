@@ -2,16 +2,22 @@ observium:
   dbuser: observer 
   dbpass: Y0RvD_j@8V-3
   dbname: observium
-  level:  superadmin
-  user:   admin
-  pass:   MatterSplatter
-  users:
+  level:  10
+  user:   obsadmin             # Admin is disabled by default
+  pass:   MatterSplatter       # Password is required!
+  users:  # observium.users creates these entities
     john:
       password: Ripper
       email: nothing@nowhere.com
+      level: 10
     joshua:
       password: Jack
       email: nothing@nowhere.com
+      level: 10
+    cory:
+      password: Unimpressed
+      email: neverthere@nothere.com
+      level: 1
 
 #USER LEVELS:
 #  0 - Disabled (This user disabled)
