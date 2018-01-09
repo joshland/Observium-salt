@@ -1,98 +1,133 @@
 {% set observium = pillar['observium'] -%}
+include:
+  - .php7
+
 pkgs:
   pkg.installed:
     - pkgs:
       - nginx
       - php-fpm
- 
+      - php-mysqlnd
+      - mariadb-server
+      - python2-PyMySQL
+      - python3-PyMySQL
+      - python2-mysqldb
+
+## Configure system packages and services
 /etc/php-fpm.d/www.conf:
-  fle.managed:
+  file.managed:
     - user:  root
     - group: root
     - mode:  0655
+    - template: jinja
     - source: salt://observium/files/www.obs.php
 
-/opt/observium:
+/etc/nginx/conf.d/observium.conf:
+  file.managed:
+    - user:  root
+    - group: root
+    - mode:  0655
+    - template: jinja
+    - source: salt://observium/files/nginx.conf
+
+/etc/cron.d/observium:
+  file.managed:
+    - source: salt://observium/files/cron
+
+
+mariadb-service:
+  service.running:
+    - name: mariadb
+    - enable: True
+
+      
+nginx-service:
+  service.running:
+    - name: nginx
+    - enable: True
+
+php-service:
+  service.running:
+    - name: php-fpm
+    - enable: True
+
+
+## Deploy Observium
+/opt/observium/rrd:
   file.directory:
     - makedirs: True
-    - order: 12
+
+/opt/observium/logs:
+  file.directory:
+    - makedirs: True
  
-install_observium:
+acquire_observium:
   cmd.run:
     - cwd: /opt
     - name: 'wget http://www.observium.org/observium-community-latest.tar.gz'
     - creates: /opt/observium-community-latest.tar.gz
-    - order: 13
 
 observium_extract:
   cmd.run:
     - cwd: /opt
     - name: 'tar zxvf observium-community-latest.tar.gz'
     - creates: /opt/observium/discovery.php
-    - order: 14
+    - only_if: test -e /opt/observium-community-latest.tar.gz
 
 copy_config:
   cmd.run:
     - cwd: /opt/observium
     - name: cp config.php.default config.php
-    - order: 14
+    - only_if: test ! -e /opt/observium/config.php
 
-/opt/observium/config.php:
-  file.blockreplace:
-    - name: /opt/observium/config.php
-    - marker_start: $config['db_host'] = 'localhost';
-    - marker_end:   $config['db_name'] = 'observium';
-    - content: |
-        $config['db_user'] = '{{ observium["user"] }}';
-        $config['db_pass'] = '{{ observium["pass"] }}';
-    - order: 17
+observium user config change:
+  file.replace:
+    - name:    /opt/observium/config.php
+    #- pattern: {{ '$config[[]\'db_user\'[]].*\'USERNAME\';' | regex_escape }}
+    - pattern: |
+        \$config[[]'db_user'[]].*'USERNAME';
+    - repl:    |
+        $config['db_user'] = '{{ observium["dbuser"] }}';
+    
+observium pass config change:
+  file.replace:
+    - name:    /opt/observium/config.php
+    - pattern: |
+        \$config[[]'db_pass'[]].*'PASSWORD';
+    - repl:    |
+        $config['db_pass'] = '{{ observium["dbpass"] }}';
 
 Create_db:
   cmd.run:
     - names:
-      - mysql -u{{ observium['user'] }} -p{{ observium['pass'] }} -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-      - mkdir -p /opt/observium/rrd
-    - order: 15
+      - mysql -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
 
 Change_privilages:
   cmd.run:
     - names:
-      - mysql -u{{ observium['dbuser'] }} -p{{ observium['dbpass'] }} -e "GRANT ALL PRIVILEGES ON {{ observium['dbname'] }}.* TO '{{ observium['user'] }}'@'localhost'IDENTIFIED BY '{{ observium['pass'] }}';"
-      - mkdir -p /opt/observium/logs
-    - order: 16
+      - mysql -e "GRANT ALL PRIVILEGES ON {{ observium['dbname'] }}.* TO '{{ observium['dbuser'] }}'@'localhost'IDENTIFIED BY '{{ observium['dbpass'] }}';"
+
+mysql reload:
+  cmd.run:
+    - names:
+      - mysqladmin reload
 
 Change_permission:
   cmd.run:
     - cwd: /opt/observium
     - names:
-      - php includes/update/update.php
-      - chown www-data:www-data /opt/observium/rrd
-    - order: 18
- 
-/etc/apache2/sites-available/default:
-  file.managed:
-    - source: salt://observium/files/apache-default
-    - order: 19
+      - chown nginx:nginx /opt/observium/rrd /opt/observium/logs
 
-Reload_apache:
- cmd.run:
-   - name: service apache2 reload
-   - order: 20
-
-Enable_modules:
+schema installation:
   cmd.run:
     - cwd: /opt/observium
     - names:
-#        - php5enmod php5-mcrypt
-      - a2enmod rewrite
-      - apache2ctl restart
-    - order: 21
+      - ./discovery.php -u
 
 Add_observium_user:
   cmd.run:
     - cwd: /opt/observium
-    - name: ./adduser.php {{ observium['user'] }} {{ observium['pass'] }} {{ observium['level'] }}
-    - order: 22
+    - name: ./adduser.php "{{ observium['user'] }}" "{{ observium['pass'] }}" {{ observium['level'] }}
 
 polling_discovery:
   cmd.run:
@@ -100,10 +135,5 @@ polling_discovery:
     - names:
       - ./discovery.php -h all
       - ./poller.php -h all
-    - order: 23
 
-/etc/cron.d/observium:
-  file.managed:
-    - source: salt://observium/files/cron
-    - order: 24
-
+{% for user in observium['users'] %}
