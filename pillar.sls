@@ -2,8 +2,8 @@ observium:
   dbuser: observer 
   dbpass: Y0RvD_j@8V-3
   dbname: observium
-  level:  superadmin
-  user:   admin
+  level:  10
+  user:   obsadmin       ## 'admin' is now disable by default
   pass:   MatterSplatter
   ldap:   'False',
   ## Optional
@@ -22,9 +22,11 @@ observium:
     john:
       password: Ripper
       email: nothing@nowhere.com
+      level: 10
     joshua:
       password: Jack
       email: nothing@nowhere.com
+      level: 10
 
 #USER LEVELS:
 #  0 - Disabled (This user disabled)

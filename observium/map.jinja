@@ -14,4 +14,28 @@
     'auth_ldap_objectclass': "",
     'auth_ldap_recursive':  TRUE,
     'auth_ldap_recursive_maxdepth': 3,
+
+                                      
+    $auth_ldap_attr_uid = "sAMAccountName";
+    $auth_ldap_attr_uidNumber'] = "objectSid";
+ $auth_ldap_attr']['cn'] = "name";
+ $auth_ldap_attr']['dn'] = "distinguishedname";
+ $auth_ldap_objectclass'] = "person";
+
+ $auth_ldap_version'] = 3;
+ $auth_ldap_server'] = "domaincontroller.example.com";
+ $auth_ldap_port']   = 389;
+ $auth_ldap_starttls'] = TRUE;
+
+ $auth_ldap_prefix'] = "CN=";
+ $auth_ldap_suffix'] = ",CN=Users,DC=ad,DC=example,DC=com";
+ $auth_ldap_group']  = array("CN=Observium Users,OU=Groups,DC=ad,DC=example,DC=com");
+ $auth_ldap_groupbase'] = "OU=Groups,DC=ad,DC=example,DC=com";
+
+ $auth_ldap_groupmembertype'] = "fulldn";
+ $auth_ldap_groupmemberattr'] = "member";
+
+ $auth_ldap_groups']['CN=Observium Admins,OU=Groups,DC=example,DC=COM']['level'] = 10;
+ $auth_ldap_groups']['CN=Observium Users,OU=Groups,DC=example,DC=COM']['level'] = 1;
+    
     }, merge=True)  -%}
