@@ -1,3 +1,4 @@
+{% from "observium/map.jinja" import obdata with context %}
 [www]
 user   = apache
 group  = apache
@@ -6,10 +7,10 @@ listen.acl_users       = apache,nginx
 listen.allowed_clients = 127.0.0.1
 
 pm = dynamic
-pm.max_children      = 50
-pm.start_servers     = 2
-pm.min_spare_servers = 2
-pm.max_spare_servers = 5
+pm.max_children      = {{ (obdata.workers * 2) | float | int }}
+pm.start_servers     = {{ (obdata.workers / 2 + 1) | float | int  }}
+pm.min_spare_servers = {{ (obdata.workers / 2 + 1) | float | int  }}
+pm.max_spare_servers = {{ obdata.workers }}
  
 slowlog = /var/log/php-fpm/www-slow.log
  

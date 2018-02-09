@@ -1,4 +1,4 @@
-{% set observium = pillar['observium'] -%}
+{% from "observium/map.jinja" import obdata with context %}
 include:
   - .php7
 
@@ -13,6 +13,16 @@ pkgs:
       - python3-PyMySQL
       - python2-mysqldb
 
+Create_db:
+  cmd.run:
+    - names:
+      - mysql -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+
+Change_privilages:
+  cmd.run:
+    - names:
+      - mysql -e "GRANT ALL PRIVILEGES ON {{ obdata['dbname'] }}.* TO '{{ obdata['dbuser'] }}'@'localhost'IDENTIFIED BY '{{ obdata['dbpass'] }}';"
+
 ## Configure system packages and services
 /etc/php-fpm.d/www.conf:
   file.managed:
@@ -24,23 +34,23 @@ pkgs:
 
 {% if grains.ssl_cert is defined -%}
 {% if grains.ssl_key is defined -%}
-/etc/pki/tls/certs/observium.crt:
+{{ obdata.ssl_cert }}:
   file.managed:
     - user:  nginx
     - group: nginx
     - mode:  0650
     - template: jinja
     - contents: |
-       {{ netbox.ssl_cert_content | indent(8) }}
+        {{ obdata.ssl_cert_content | indent(8) }}
 
-/etc/pki/tls/private/observium.key:
+{{ obdata.ssl_key }}:
   file.managed:
     - user:  nginx
     - group: nginx
     - mode:  0650
     - template: jinja
     - contents: |
-        {{ observium.ssl_key_content | indent(8) }}
+        {{ obdata.ssl_key_content | indent(8) }}
 
 {%- endif %}
 {%- endif %}
@@ -74,8 +84,6 @@ php-service:
     - name: php-fpm
     - enable: True
 
-
-## Deploy Observium
 /opt/observium/rrd:
   file.directory:
     - makedirs: True
@@ -106,11 +114,10 @@ copy_config:
 observium user config change:
   file.replace:
     - name:    /opt/observium/config.php
-    #- pattern: {{ '$config[[]\'db_user\'[]].*\'USERNAME\';' | regex_escape }}
     - pattern: |
         \$config[[]'db_user'[]].*'USERNAME';
     - repl:    |
-        $config['db_user'] = '{{ observium["dbuser"] }}';
+        $config['db_user'] = '{{ obdata["dbuser"] }}';
     
 observium pass config change:
   file.replace:
@@ -118,17 +125,7 @@ observium pass config change:
     - pattern: |
         \$config[[]'db_pass'[]].*'PASSWORD';
     - repl:    |
-        $config['db_pass'] = '{{ observium["dbpass"] }}';
-
-Create_db:
-  cmd.run:
-    - names:
-      - mysql -e "CREATE DATABASE observium DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-
-Change_privilages:
-  cmd.run:
-    - names:
-      - mysql -e "GRANT ALL PRIVILEGES ON {{ observium['dbname'] }}.* TO '{{ observium['dbuser'] }}'@'localhost'IDENTIFIED BY '{{ observium['dbpass'] }}';"
+        $config['db_pass'] = '{{ obdata["dbpass"] }}';
 
 mysql reload:
   cmd.run:
@@ -141,29 +138,3 @@ Change_permission:
     - names:
       - chown nginx:nginx /opt/observium/rrd /opt/observium/logs
 
-schema installation:
-  cmd.run:
-    - cwd: /opt/observium
-    - names:
-      - ./discovery.php -u
-
-Add_observium_user:
-  cmd.run:
-    - cwd: /opt/observium
-    - name: ./adduser.php "{{ observium['user'] }}" "{{ observium['pass'] }}" {{ observium['level'] }}
-
-polling_discovery:
-  cmd.run:
-    - cwd: /opt/observium
-    - names:
-      - ./discovery.php -h all
-      - ./poller.php -h all
-
-{% if observium.users is defined %}
-{% for user, detail in observium['users'].items %}
-observium create {{ user }}:
-  cmd.run:
-    - cwd: /opt/observium
-    - name: ./adduser.php "{{ user }}" "{{ detail['pass'] }}" {{ detail.get('level', 10) }}
-{% endfor %}
-{% endif %}

@@ -1,3 +1,4 @@
+{% from "observium/map.jinja" import obdata with context %}
 base:
   pkg.installed:
     - order: 4

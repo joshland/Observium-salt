@@ -1,8 +1,8 @@
+{% from "observium/map.jinja" import obdata with context %}
 base:
   pkg.installed:
     - pkgs:
       - ImageMagick
-      - python2-mysql
       - php-mysqlnd
       - cronie
       - fping
@@ -18,7 +18,6 @@ base:
       - php-mcrypt
       - php-opcache
       - php-pear
-      - php-posix
       - rrdtool
       - subversion
       - wget

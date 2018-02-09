@@ -1,4 +1,4 @@
-{% set observium = pillar['observium'] -%}
+{% from "observium/map.jinja" import obdata with context %}
 /etc/php-fpm.d/www.conf:
   file.managed:
     - user:  root
@@ -26,7 +26,7 @@ observium user config change:
     - pattern: |
         \$config[[]'db_user'[]].*'USERNAME';
     - repl:    |
-        $config['db_user'] = '{{ observium["dbuser"] }}';
+        $config['db_user'] = '{{ obdata["dbuser"] }}';
     
 observium pass config change:
   file.replace:
@@ -34,5 +34,4 @@ observium pass config change:
     - pattern: |
         \$config[[]'db_pass'[]].*'PASSWORD';
     - repl:    |
-        $config['db_pass'] = '{{ observium["dbpass"] }}';
-
+        $config['db_pass'] = '{{ obdata["dbpass"] }}';

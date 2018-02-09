@@ -1,5 +1,5 @@
-{% set observium = pillar['observium'] -%}
-{% for user, udict in observium['users'].items() -%}
+{% from "observium/map.jinja" import obdata with context %}
+{% for user, udict in obdata['users'].items() -%}
 {{ user }} Add_observium_user:
   cmd.run:
     - cwd: /opt/observium

@@ -1,7 +1,12 @@
-{% set observium = salt['pillar.get']('observium', {
+{% set obdata = salt['pillar.get']('observium', default = {
     "dbuser": 'observer',
     "dbname": 'observium',
     "ldap":   'False',
+		'workers': 25,
+		'users': { 'testuser':{ 'pass': 'password',
+						 	 							'level': 10,
+                            'email': 'test@consoto.com',}
+               },
     "auth_ldap_prefix": "uid=",
     "auth_ldap_suffix": "cn=users,cn=acount,dc=example,dc=org",
     'auth_ldap_prefix': "uid=",
@@ -15,3 +20,12 @@
     'auth_ldap_recursive':  TRUE,
     'auth_ldap_recursive_maxdepth': 3,
     }, merge=True)  -%}
+
+{% if grains.ssl_cert is defined -%}
+{% if grains.ssl_key is defined -%}
+{% do obdata.update({'ssl_cert': '/etc/pki/tls/certs/salt-ssl-certificate.crt'   }) %}
+{% do obdata.update({'ssl_key':  '/etc/pki/tls/private/salt-ssl-certificate.key' }) %}
+{% do obdata.update({'ssl_cert_content': pillar.get('certificates', {}).get(grains.ssl_cert) }) %}
+{% do obdata.update({'ssl_key_content':  pillar.get('certificates', {}).get(grains.ssl_key)  }) %}
+{%- endif %}
+{%- endif %}
