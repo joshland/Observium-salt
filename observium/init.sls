@@ -22,6 +22,29 @@ pkgs:
     - template: jinja
     - source: salt://observium/files/www.obs.php
 
+{% if grains.ssl_cert is defined -%}
+{% if grains.ssl_key is defined -%}
+/etc/pki/tls/certs/observium.crt:
+  file.managed:
+    - user:  nginx
+    - group: nginx
+    - mode:  0650
+    - template: jinja
+    - contents: |
+       {{ netbox.ssl_cert_content | indent(8) }}
+
+/etc/pki/tls/private/observium.key:
+  file.managed:
+    - user:  nginx
+    - group: nginx
+    - mode:  0650
+    - template: jinja
+    - contents: |
+        {{ observium.ssl_key_content | indent(8) }}
+
+{%- endif %}
+{%- endif %}
+
 /etc/nginx/conf.d/observium.conf:
   file.managed:
     - user:  root
@@ -136,4 +159,11 @@ polling_discovery:
       - ./discovery.php -h all
       - ./poller.php -h all
 
-{% for user in observium['users'] %}
+{% if observium.users is defined %}
+{% for user, detail in observium['users'].items %}
+observium create {{ user }}:
+  cmd.run:
+    - cwd: /opt/observium
+    - name: ./adduser.php "{{ user }}" "{{ detail['pass'] }}" {{ detail.get('level', 10) }}
+{% endfor %}
+{% endif %}
